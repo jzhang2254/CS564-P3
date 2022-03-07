@@ -418,6 +418,15 @@ class BTreeIndex {
 	**/
 	void endScan();
 	
+  /**
+   * @brief Recursive traversing algorithm based on key
+   * 
+   * @param page Starting page
+   * @param pageLevel Page level
+   * @param keyPtr Pointer to the key to be searched for
+   * @param leafId PageId of leaf
+   */
+  void traverse(Page* page, int pageLevel, const void* keyPtr, PageId &leafID);
 };
 
 }

@@ -350,6 +350,50 @@ void BTreeIndex::startScan(const void* lowValParm,
 
     if (lowValInt > highValInt)
         throw BadScanrangeException();
+    
+    Page* leafPage;
+	PageId leafPageId;
+	traverse(rootPage, ((NonLeafNodeInt*) rootPage)->level, lowValParm, leafPageId);
+
+	bufMgr->readPage(file, leafPageId, leafPage);
+	LeafNodeInt* leaf = (LeafNodeInt*) leafPage;
+    currentPageNum = leafPageId;
+
+	bool foundFlag = false;
+	while(!foundFlag) {
+		
+		for(int i = 0; i < leafOccupancy; i++) {
+ 
+			if(leaf->keyArray[i] != INT_MAX && 
+				((lowOp == GT && leaf->keyArray[i] > lowValInt) || (lowOp == GTE && leaf->keyArray[i] >= lowValInt)) && 
+				((highOp == LT && leaf->keyArray[i] < highValInt) || (highOp == LTE && leaf->keyArray[i] <= highValInt))) {
+						
+                currentPageData = leafPage;
+				currentPageNum = leafPageId;
+				nextEntry = i;
+				foundFlag = true;
+				break;
+			} 
+		}
+
+		if(!foundFlag) {
+			if(leaf->rightSibPageNo != NULL) {
+				PageId nextPageId = leaf->rightSibPageNo;
+				bufMgr->readPage(file, nextPageId, leafPage);
+
+				bufMgr->unPinPage(file, leafPageId, false);
+					
+				leafPageId = nextPageId;
+				leaf = (LeafNodeInt*) leafPage;
+			} else {
+				bufMgr->unPinPage(file, leafPageId, false);
+
+				nextEntry = -1;
+				foundFlag = true; 
+                throw NoSuchKeyFoundException();
+            }
+        }
+    }
 
     scanExecuting = true;
 }
@@ -416,6 +460,50 @@ void BTreeIndex::endScan()
 
     if (currentPageNum != 0)
         bufMgr->unPinPage(file, currentPageNum, false);
+}
+
+void BTreeIndex::traverse(Page* page, int pageLevel, const void* keyPtr, PageId &leafID) {
+
+    if(pageLevel == 0) {
+        int key = *((int*) keyPtr);
+		NonLeafNodeInt* nodeInt = (NonLeafNodeInt*) page;
+
+		for(int i = 0; i < nodeOccupancy; i++) {
+			if(key < nodeInt->keyArray[0]) {
+				int index = 0; 
+			}
+			else if(key >= nodeInt->keyArray[i] && !(i == nodeOccupancy - 1 || nodeInt->keyArray[i+1] == INT_MAX) && key < nodeInt->keyArray[i + 1]) {
+				int index = i + 1;
+			}
+			else if(key >= nodeInt->keyArray[i] && (i == nodeOccupancy - 1 || nodeInt->keyArray[i + 1] == INT_MAX)) {
+				int index = i + 1;
+			}
+		}
+
+		Page* child;
+		bufMgr->readPage(file, ((NonLeafNodeInt*) page)->pageNoArray[index], child);
+		traverse(child, ((NonLeafNodeInt*) child)->level, keyPtr, leafID);
+
+		bufMgr->unPinPage(file, ((NonLeafNodeInt*) page)->pageNoArray[index], false);
+	} else {
+		int key = *((int*) keyPtr);
+		NonLeafNodeInt* nodeInt = (NonLeafNodeInt*) page;
+
+		for(int i = 0; i < nodeOccupancy; i++) {
+			if(key < nodeInt->keyArray[0]) {
+				int index = 0; 
+			}
+			else if(key >= nodeInt->keyArray[i] && !(i == nodeOccupancy - 1 || nodeInt->keyArray[i+1] == INT_MAX) && key < nodeInt->keyArray[i + 1]) {
+				int index = i + 1;
+			}
+			else if(key >= nodeInt->keyArray[i] && (i == nodeOccupancy - 1 || nodeInt->keyArray[i + 1] == INT_MAX)) {
+				int index = i + 1;
+			}
+		}
+        
+		leafID = ((NonLeafNodeInt*) page)->pageNoArray[index];
+	}
+
 }
 
 }
