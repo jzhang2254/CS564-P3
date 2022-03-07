@@ -351,6 +351,12 @@ void BTreeIndex::startScan(const void* lowValParm,
     if (lowValInt > highValInt)
         throw BadScanrangeException();
     
+	if (scanExecuting) {
+		endScan();
+	}
+
+	scanExecuting = true;
+
     Page* leafPage;
 	PageId leafPageId;
 	traverse(rootPage, ((NonLeafNodeInt*) rootPage)->level, lowValParm, leafPageId);
@@ -395,7 +401,6 @@ void BTreeIndex::startScan(const void* lowValParm,
         }
     }
 
-    scanExecuting = true;
 }
 
 // -----------------------------------------------------------------------------
