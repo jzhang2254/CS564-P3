@@ -91,11 +91,6 @@ BTreeIndex::BTreeIndex(const std::string & relationName,
   
   // read inputs from fscan and insert into B tree
 	if (fileExists) {
-		try {
-			FileScan fscan = FileScan(relationName, bufMgrIn);
-		} catch(FileNotFoundException e){
-			return; // DEBUG STATEMENT
-		}
 		FileScan fscan = FileScan(relationName, bufMgrIn); 
 		try{
 				RecordId scanRid;
@@ -230,32 +225,6 @@ void BTreeIndex::insertLeafInt(int &key, const RecordId rid, PageId &pageId) {
 	}
 }
 
-// void BTreeIndex::insertionNL(NonLeafNodeInt* node, PageId childPageId, int i) {
-// 	if (node->keyArray[i] != INT_MAX) std::cout<<"This key slot is not empty."<<std::endl;
-// 	if (node->pageNoArray[i] != Page::INVALID_NUMBER) std::cout<<"This page number slot is not empty."<<std::endl;
-
-// 	if (node->level == 1) { // put first key in new leaf into current node
-// 		// new node is a leaf (leave key in node)
-// 		Page* newChild;
-// 		bufMgr->readPage(file, childPageId, newChild);
-// 		LeafNodeInt* child = reinterpret_cast<LeafNodeInt*>(newChild);
-			
-// 		node->keyArray[i] = child->keyArray[0];
-// 		node->pageNoArray[i+1] = childPageId;
-// 		bufMgr->unPinPage(file, childPageId, true);
-// 	} else {
-// 		// new node is non leaf (remove key from node)
-// 		Page* oldChild;
-// 		bufMgr->readPage(file, node->pageNoArray[i], oldChild);
-// 		NonLeafNodeInt* child = reinterpret_cast<NonLeafNodeInt*>(oldChild);
-
-// 		node->keyArray[i] = child->keyArray[INTARRAYNONLEAFSIZE/2];
-// 		child->keyArray[INTARRAYNONLEAFSIZE/2] = INT_MAX;
-// 		node->pageNoArray[i+1] = childPageId; 	
-// 		bufMgr->unPinPage(file, node->pageNoArray[i], true);			
-// 	}
-// }
-
 void BTreeIndex::insertNoSplit(NonLeafNodeInt* node, const int newKey, const PageId newPageId) {
 	int i;
 	for (i = 0; i < INTARRAYNONLEAFSIZE && newKey > node->keyArray[i]; i++);
@@ -277,9 +246,6 @@ void BTreeIndex::insertNoSplit(NonLeafNodeInt* node, const int newKey, const Pag
 
 	}
 }
-
-
-// void BTreeIndex::insertNonLeaf();
 
 void BTreeIndex::insertNonLeafInt(int &key, const RecordId rid, PageId &pageId) {
 	PageId result = Page::INVALID_NUMBER;
