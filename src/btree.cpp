@@ -359,6 +359,8 @@ void BTreeIndex::startScan(const void* lowValParm,
 
     Page* leafPage;
 	PageId leafPageId;
+	Page* rootPage;
+	bufMgr->readPage(file, rootPageNum, rootPage);
 	traverse(rootPage, ((NonLeafNodeInt*) rootPage)->level, lowValParm, leafPageId);
 
 	bufMgr->readPage(file, leafPageId, leafPage);
