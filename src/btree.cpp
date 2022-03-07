@@ -57,7 +57,7 @@ BTreeIndex::BTreeIndex(const std::string & relationName,
 
   	} catch(FileNotFoundException e)
 	{
-		fileExists = false;
+		fileExists = true;
 		file = new BlobFile(outIndexName, true);
 	  	// Page* metaPage;
 	  	PageId metaPageId;
