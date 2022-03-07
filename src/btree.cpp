@@ -471,19 +471,21 @@ void BTreeIndex::endScan()
 
 void BTreeIndex::traverse(Page* page, int pageLevel, const void* keyPtr, PageId &leafID) {
 
+	int index;
+
     if(pageLevel == 0) {
         int key = *((int*) keyPtr);
 		NonLeafNodeInt* nodeInt = (NonLeafNodeInt*) page;
 
 		for(int i = 0; i < nodeOccupancy; i++) {
 			if(key < nodeInt->keyArray[0]) {
-				int index = 0; 
+				index = 0; 
 			}
 			else if(key >= nodeInt->keyArray[i] && !(i == nodeOccupancy - 1 || nodeInt->keyArray[i+1] == INT_MAX) && key < nodeInt->keyArray[i + 1]) {
-				int index = i + 1;
+				index = i + 1;
 			}
 			else if(key >= nodeInt->keyArray[i] && (i == nodeOccupancy - 1 || nodeInt->keyArray[i + 1] == INT_MAX)) {
-				int index = i + 1;
+				index = i + 1;
 			}
 		}
 
@@ -498,13 +500,13 @@ void BTreeIndex::traverse(Page* page, int pageLevel, const void* keyPtr, PageId 
 
 		for(int i = 0; i < nodeOccupancy; i++) {
 			if(key < nodeInt->keyArray[0]) {
-				int index = 0; 
+				index = 0; 
 			}
 			else if(key >= nodeInt->keyArray[i] && !(i == nodeOccupancy - 1 || nodeInt->keyArray[i+1] == INT_MAX) && key < nodeInt->keyArray[i + 1]) {
-				int index = i + 1;
+				index = i + 1;
 			}
 			else if(key >= nodeInt->keyArray[i] && (i == nodeOccupancy - 1 || nodeInt->keyArray[i + 1] == INT_MAX)) {
-				int index = i + 1;
+				index = i + 1;
 			}
 		}
         
