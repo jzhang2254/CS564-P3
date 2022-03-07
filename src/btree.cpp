@@ -46,7 +46,8 @@ BTreeIndex::BTreeIndex(const std::string & relationName,
 	IndexMetaInfo* metaData;
 	bool fileExists = true;
   	try {
-		file = new BlobFile(outIndexName, false); // already exists
+		BlobFile temp = BlobFile::open(outIndexName);
+		file = &temp; // already exists
 		// Page* metaPage;
 		bufMgr->readPage(file, 1, metaPage);
 		metaData = reinterpret_cast<IndexMetaInfo*>(metaPage);
@@ -107,7 +108,7 @@ BTreeIndex::BTreeIndex(const std::string & relationName,
 			{
 				std::cout << "Inserted all records" << std::endl;
 			}
-		fscan.~FileScan();
+		//fscan.~FileScan();
 
 	}
 	// bufMgr->flushFile(file);
