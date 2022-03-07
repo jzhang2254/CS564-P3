@@ -340,7 +340,18 @@ void BTreeIndex::startScan(const void* lowValParm,
 				   const void* highValParm,
 				   const Operator highOpParm)
 {
+    if ((lowOpParm != GT && lowOpParm != GTE) || (highOpParm != LT && highOpParm != LTE))
+        throw BadOpcodesException();
 
+    lowOp = lowOpParm;
+    highOp = highOpParm;
+    lowValInt = *((int*) lowValParm);
+    highValInt = *((int*) highValParm);
+
+    if (lowValInt > highValInt)
+        throw BadScanrangeException();
+
+    scanExecuting = true;
 }
 
 // -----------------------------------------------------------------------------
@@ -398,7 +409,13 @@ void BTreeIndex::scanNext(RecordId& outRid)
 //
 void BTreeIndex::endScan() 
 {
+    if (scanExecuting == false)
+        throw ScanNotInitializedException();
+    
+    scanExecuting = false;
 
+    if (currentPageNum != 0)
+        bufMgr->unPinPage(file, currentPageNum, false);
 }
 
 }
