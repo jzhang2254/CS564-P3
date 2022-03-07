@@ -394,7 +394,7 @@ void BTreeIndex::startScan(const void* lowValParm,
 			} else {
 				bufMgr->unPinPage(file, leafPageId, false);
 
-				nextEntry = -1;
+				nextEntry = 0;
 				foundFlag = true; 
                 throw NoSuchKeyFoundException();
             }
