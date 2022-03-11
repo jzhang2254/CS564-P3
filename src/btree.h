@@ -54,7 +54,7 @@ const  int INTARRAYLEAFSIZE = ( Page::SIZE - sizeof( PageId ) ) / ( sizeof( int 
 //                                                     level     extra pageNo                  key       pageNo
 const  int INTARRAYNONLEAFSIZE = ( Page::SIZE - sizeof( int ) - sizeof( PageId ) ) / ( sizeof( int ) + sizeof( PageId ) );
 
-const int INT_MAX = (sizeof(int) == 4) ? INT32_MAX : INT64_MAX;  //FIXME -- could cause complier error if 
+// const int INT_MAX = (sizeof(int) == 4) ? INT32_MAX : INT64_MAX; 
 
 /**
  * @brief Structure to store a key-rid pair. It is used to pass the pair to functions that 
@@ -328,7 +328,7 @@ class BTreeIndex {
    * @param newKey the key from the lower level and is being passed as a new key (after a split)
    * @param newPageId the page id of node
    * */
-  void insertNoSplit(NonLeafNodeInt* node, const int newKey, const PageId newPageId);
+  void insertNoSplit(NonLeafNodeInt* nodeId, const int newKey, const PageId newPageId);
   // void insertionNL(NonLeafNodeInt* nodee, PageId newPageId, int i);
   
   /**
@@ -418,14 +418,6 @@ class BTreeIndex {
 	**/
 	void endScan();
 	
-  /**
-   * @brief Recursive traversing algorithm based on key
-   * 
-   * @param page Starting page
-   * @param pageLevel Page level
-   * @param keyPtr Pointer to the key to be searched for
-   * @param leafId PageId of leaf
-   */
   void traverse(Page* page, int pageLevel, const void* keyPtr, PageId &leafID);
 };
 
